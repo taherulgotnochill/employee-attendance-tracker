@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Employee Attendance Tracker</title>
+<style>
+:root{--bg:#f4f6fb;--ink:#172033;--muted:#6b7280;--line:#e7eaf1;--blue:#3457d5;--green:#16845b;--red:#c24141}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+.layout{display:flex;min-height:100vh}.side{width:235px;background:#17213b;color:#fff;padding:28px 18px}
+.brand{font-size:18px;font-weight:800;line-height:1.35;margin:0 10px 36px}.brand span{display:block;color:#aebdfb;font-size:12px;font-weight:500;margin-top:6px}
+.nav button{display:block;width:100%;border:0;background:transparent;color:#cbd3e7;text-align:left;padding:13px 14px;border-radius:10px;margin:5px 0;font-size:14px;cursor:pointer}
+.nav button.active,.nav button:hover{background:#2b3a63;color:white}.main{flex:1;padding:32px;max-width:1400px;margin:auto;width:100%}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:25px}.top h1{font-size:26px;margin:0}.top p{margin:7px 0 0;color:var(--muted);font-size:14px}
+.badge{background:#e7edff;color:#3457d5;padding:9px 13px;border-radius:20px;font-size:12px;font-weight:700}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:22px}.card,.panel{background:white;border:1px solid var(--line);border-radius:15px;padding:20px;box-shadow:0 3px 12px #18254a08}
+.card small{color:var(--muted);font-size:13px}.num{font-size:30px;font-weight:800;margin-top:10px}.green{color:var(--green)}.red{color:var(--red)}
+.grid{display:grid;grid-template-columns:1.5fr 1fr;gap:18px}.panel h2{font-size:16px;margin:0 0 17px}
+table{width:100%;border-collapse:collapse;font-size:13px}th{text-align:left;color:var(--muted);font-weight:600;padding:11px 8px;border-bottom:1px solid var(--line)}td{padding:13px 8px;border-bottom:1px solid #f0f1f5}tr:last-child td{border-bottom:0}
+.status{padding:5px 9px;border-radius:15px;font-size:11px;font-weight:700}.present{background:#e5f6ee;color:#16845b}.absent{background:#fdecec;color:#c24141}.pending{background:#fff4dc;color:#986a12}
+.actions{display:flex;gap:8px;flex-wrap:wrap}.btn{border:0;border-radius:8px;padding:10px 13px;background:var(--blue);color:#fff;cursor:pointer;font-weight:600;font-size:13px}.btn.secondary{background:#edf0f8;color:#27324c}.btn.danger{background:#fff0f0;color:#b83232}
+input,select{width:100%;padding:11px;border:1px solid #dfe3ed;border-radius:8px;margin:7px 0 13px;font:inherit}label{font-size:12px;color:#596174;font-weight:700}
+.formrow{display:grid;grid-template-columns:1fr 1fr;gap:10px}.hidden{display:none}.empty{color:var(--muted);font-size:13px;padding:15px 0}
+#toast{position:fixed;bottom:22px;right:22px;background:#17213b;color:#fff;padding:12px 17px;border-radius:9px;display:none;font-size:13px}
+@media(max-width:850px){.side{width:185px}.grid{grid-template-columns:1fr}.main{padding:20px}}
+@media(max-width:620px){.layout{display:block}.side{width:100%;padding:15px}.brand{margin:0 8px 12px}.nav{display:flex;overflow:auto}.nav button{white-space:nowrap;width:auto}.main{padding:16px}.cards{grid-template-columns:1fr}.top{align-items:flex-start;gap:10px;flex-direction:column}}
+</style>
+</head>
+<body>
+<div class="layout">
+<aside class="side">
+  <div class="brand">Employee Tracker<span>ATTENDANCE MANAGEMENT</span></div>
+  <nav class="nav">
+    <button class="active" data-page="dashboard">▦ &nbsp; Dashboard</button>
+    <button data-page="employees">♙ &nbsp; Employees</button>
+    <button data-page="attendance">✓ &nbsp; Mark Attendance</button>
+    <button data-page="reports">▤ &nbsp; Reports</button>
+  </nav>
+</aside>
+<main class="main">
+  <div class="top"><div><h1 id="pageTitle">Dashboard</h1><p>Manage your team and daily attendance in one place.</p></div><span class="badge" id="today"></span></div>
+
+  <section id="dashboard">
+    <div class="cards">
+      <div class="card"><small>Total employees</small><div class="num" id="totalCount">0</div></div>
+      <div class="card"><small>Present today</small><div class="num green" id="presentCount">0</div></div>
+      <div class="card"><small>Absent today</small><div class="num red" id="absentCount">0</div></div>
+    </div>
+    <div class="grid">
+      <div class="panel"><h2>Today's attendance</h2><div id="todayTable"></div></div>
+      <div class="panel"><h2>Quick actions</h2><p style="color:#6b7280;font-size:13px;line-height:1.6">Add a team member or record attendance for today.</p><div class="actions"><button class="btn" onclick="showPage('employees')">+ Add employee</button><button class="btn secondary" onclick="showPage('attendance')">Mark attendance</button></div></div>
+    </div>
+  </section>
+
+  <section id="employees" class="hidden">
+    <div class="grid">
+      <div class="panel"><h2>Add employee</h2>
+        <form id="employeeForm">
+          <label>Employee ID</label><input id="empId" type="number" min="1" required placeholder="e.g. 101">
+          <label>Full name</label><input id="empName" required placeholder="Employee name">
+          <label>Department</label><input id="empDept" required placeholder="e.g. Engineering">
+          <button class="btn" type="submit">Add employee</button>
+        </form>
+      </div>
+      <div class="panel"><h2>Search employee</h2><label>Search by ID or name</label><input id="searchBox" placeholder="Type employee ID or name..."><div id="searchResult" class="empty">Search results will appear here.</div></div>
+    </div>
+    <div class="panel" style="margin-top:18px"><h2>Employee directory</h2><div id="employeeTable"></div></div>
+  </section>
+
+  <section id="attendance" class="hidden">
+    <div class="panel" style="max-width:650px"><h2>Record attendance</h2>
+      <form id="attendanceForm">
+        <label>Employee</label><select id="attendanceEmployee" required></select>
+        <div class="formrow"><div><label>Date</label><input id="attendanceDate" type="date" required></div><div><label>Status</label><select id="attendanceStatus"><option>Present</option><option>Absent</option></select></div></div>
+        <button class="btn" type="submit">Save attendance</button>
+      </form>
+      <p style="color:#6b7280;font-size:12px">Selecting the same employee and date again updates that day's status.</p>
+    </div>
+  </section>
+
+  <section id="reports" class="hidden">
+    <div class="panel"><h2>Attendance report</h2><label>Choose employee</label><select id="reportEmployee"></select><div id="reportOutput" style="margin-top:18px"></div></div>
+  </section>
+</main>
+</div>
+<div id="toast"></div>
+<script>
+const today = new Date().toISOString().slice(0,10);
+document.getElementById('today').textContent = new Date().toLocaleDateString(undefined,{weekday:'short',day:'numeric',month:'short',year:'numeric'});
+document.getElementById('attendanceDate').value = today;
+let employees = JSON.parse(localStorage.getItem('eat_employees') || '[]');
+let records = JSON.parse(localStorage.getItem('eat_records') || '{}');
+const save=()=>{localStorage.setItem('eat_employees',JSON.stringify(employees));localStorage.setItem('eat_records',JSON.stringify(records));};
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function toast(msg){let t=document.getElementById('toast');t.textContent=msg;t.style.display='block';setTimeout(()=>t.style.display='none',2200)}
+function showPage(page){document.querySelectorAll('main section').forEach(s=>s.classList.add('hidden'));document.getElementById(page).classList.remove('hidden');document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.page===page));document.getElementById('pageTitle').textContent=({dashboard:'Dashboard',employees:'Employees',attendance:'Mark Attendance',reports:'Attendance Reports'})[page];render()}
+document.querySelectorAll('.nav button').forEach(b=>b.addEventListener('click',()=>showPage(b.dataset.page)));
+function render(){
+ document.getElementById('totalCount').textContent=employees.length;
+ let present=employees.filter(e=>records[e.id]?.[today]==='Present').length, absent=employees.filter(e=>records[e.id]?.[today]==='Absent').length;
+ document.getElementById('presentCount').textContent=present;document.getElementById('absentCount').textContent=absent;
+ document.getElementById('todayTable').innerHTML=employees.length?table(employees.map(e=>({id:e.id,name:e.name,dept:e.dept,status:records[e.id]?.[today]||'Not marked'})),false):'<div class="empty">No employees added yet.</div>';
+ document.getElementById('employeeTable').innerHTML=employees.length?table(employees.map(e=>({...e,status:'Active'})),true):'<div class="empty">No employees registered yet.</div>';
+ const opts=employees.map(e=>`<option value="${e.id}">${esc(e.id)} — ${esc(e.name)}</option>`).join('');
+ document.getElementById('attendanceEmployee').innerHTML=opts||'<option value="">Add an employee first</option>';
+ document.getElementById('reportEmployee').innerHTML=opts||'<option value="">No employees available</option>';
+ renderReport();
+}
+function table(rows,withDelete){return `<div style="overflow:auto"><table><thead><tr><th>ID</th><th>EMPLOYEE</th><th>DEPARTMENT / STATUS</th>${withDelete?'<th>ACTION</th>':''}</tr></thead><tbody>${rows.map(r=>`<tr><td>${esc(r.id)}</td><td>${esc(r.name)}</td><td>${r.status==='Present'?'<span class="status present">Present</span>':r.status==='Absent'?'<span class="status absent">Absent</span>':r.status==='Not marked'?'<span class="status pending">Not marked</span>':esc(r.dept||r.status)}</td>${withDelete?`<td><button class="btn danger" onclick="deleteEmployee(${Number(r.id)})">Delete</button></td>`:''}</tr>`).join('')}</tbody></table></div>`}
+document.getElementById('employeeForm').addEventListener('submit',e=>{e.preventDefault();let id=Number(empId.value),name=empName.value.trim(),dept=empDept.value.trim();if(employees.some(x=>x.id===id)){toast('That employee ID already exists.');return}employees.push({id,name,dept});save();e.target.reset();render();toast('Employee added successfully.')});
+function deleteEmployee(id){if(!confirm('Delete this employee and their attendance records?'))return;employees=employees.filter(e=>e.id!==id);delete records[id];save();render();toast('Employee deleted.')};
+document.getElementById('attendanceForm').addEventListener('submit',e=>{e.preventDefault();let id=attendanceEmployee.value,date=attendanceDate.value,status=attendanceStatus.value;if(!id){toast('Please add an employee first.');return}records[id]??={};records[id][date]=status;save();render();toast('Attendance saved.')});
+document.getElementById('searchBox').addEventListener('input',e=>{let q=e.target.value.toLowerCase().trim();let found=employees.filter(x=>String(x.id).includes(q)||x.name.toLowerCase().includes(q));document.getElementById('searchResult').innerHTML=q?(found.length?found.map(x=>`<p><b>${esc(x.name)}</b><br><span style="color:#6b7280">ID ${esc(x.id)} · ${esc(x.dept)}</span></p>`).join(''):'No matching employee found.'):'Search results will appear here.'});
+document.getElementById('reportEmployee').addEventListener('change',renderReport);
+function renderReport(){let id=document.getElementById('reportEmployee').value,e=employees.find(x=>String(x.id)===String(id)),out=document.getElementById('reportOutput');if(!e){out.innerHTML='<div class="empty">Add an employee to view a report.</div>';return}let r=records[id]||{},dates=Object.keys(r).sort().reverse(),p=dates.filter(d=>r[d]==='Present').length,a=dates.filter(d=>r[d]==='Absent').length;out.innerHTML=`<h3>${esc(e.name)} <small style="color:#6b7280">· ${esc(e.dept)}</small></h3><div class="cards"><div class="card"><small>Present</small><div class="num green">${p}</div></div><div class="card"><small>Absent</small><div class="num red">${a}</div></div><div class="card"><small>Recorded days</small><div class="num">${dates.length}</div></div></div>${dates.length?'<table><thead><tr><th>DATE</th><th>STATUS</th></tr></thead><tbody>'+dates.map(d=>`<tr><td>${d}</td><td><span class="status ${r[d]==='Present'?'present':'absent'}">${r[d]}</span></td></tr>`).join('')+'</tbody></table>':'<div class="empty">No attendance has been recorded for this employee.</div>'}`}
+render();
+</script>
+</body>
+</html>
