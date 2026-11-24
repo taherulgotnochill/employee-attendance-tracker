@@ -1,12 +1,50 @@
 # Employee Attendance Tracker
 
-**DSA concepts:** Array, HashMap, Searching  
-**Language:** Java (console implementation)  
-**Prototype:** HTML, CSS and JavaScript (browser-based interactive mock-up)
+A Data Structures and Algorithms (DSA) project demonstrating employee management and daily attendance tracking.
 
-## 1. Run the Java DSA project
+**Student:** Mohammad Taherul Raza  
+**ERP ID:** RU_25-10809  
+**Project Guide:** Ms. Naina Singh  
+**University:** Rungta International Skills University  
+**Session:** 2026–27
 
-You need Java JDK 17 or later.
+## Project contents
+
+```text
+employee-attendance-tracker/
+├── java/
+│   └── EmployeeAttendanceTracker.java
+├── prototype/
+│   └── index.html
+├── docs/
+│   └── Employee_Attendance_Tracker_Interim_Report.pdf
+├── presentation/
+│   └── Employee_Attendance_Tracker_Presentation.pptx
+├── README.md
+└── .gitignore
+```
+
+## DSA concepts
+
+- **Array:** stores employee objects in the Java implementation.
+- **HashMap:** maps employee IDs to array indexes for average-case fast lookup.
+- **Nested HashMap:** stores each employee's date-wise attendance status.
+- **Searching:** retrieves employee details using the employee ID.
+
+## Java implementation
+
+The Java console program supports:
+1. Add employee
+2. View all employees
+3. Mark attendance
+4. Search employee by ID
+5. View attendance report
+6. Update attendance
+7. Delete employee
+
+### Run
+
+Requires a Java JDK (JDK 17 or later recommended).
 
 ```bash
 cd java
@@ -14,43 +52,32 @@ javac EmployeeAttendanceTracker.java
 java EmployeeAttendanceTracker
 ```
 
-The console program supports:
-1. Add employee
-2. View employees
-3. Mark attendance for the current date
-4. Search employee by ID
-5. View an employee attendance report
-6. Update an attendance record
-7. Delete employee
+## Browser prototype
 
-## 2. Open the visual prototype
+Open `prototype/index.html` in a modern browser. No server is required.
 
-Open `prototype/index.html` in Chrome, Edge, or Firefox. No server or installation is required.
+The prototype demonstrates:
+- Dashboard summary
+- Employee registration and directory
+- Search by employee ID or name
+- Mark and update attendance by date
+- Attendance reports
 
-The prototype supports adding/deleting employees, searching by ID/name, marking or updating attendance by date, dashboard totals, and individual attendance reports. Its demo data is saved in the browser's localStorage.
+The prototype stores its demo data in browser `localStorage`.
 
-## 3. Where the DSA concepts appear
+## Important implementation note
 
-- **Array:** `Employee[] employees` stores employee objects in the Java implementation.
-- **HashMap:** `employeeIndex` maps an employee ID to their array index for fast lookup. `attendance` maps employee IDs to their date-wise attendance records.
-- **Searching:** `searchEmployee()` searches using the HashMap key (employee ID). The prototype also demonstrates a simple filter search by ID/name.
+The Java console application and browser prototype are separate components in this version. They do not yet share a backend or database. The Java implementation stores records in memory while it runs; the browser prototype stores its demo data locally in the browser.
 
-## 4. Complexity (Java implementation)
+## Project documents
 
-| Operation | Expected time |
-|---|---:|
-| Add employee | O(1) average |
-| Search employee by ID | O(1) average |
-| Mark/update attendance | O(1) average |
-| View all employees | O(n) |
-| Delete employee | O(n) due to array shifting and index rebuilding |
+- Interim report: `docs/Employee_Attendance_Tracker_Interim_Report.pdf`
+- Presentation: `presentation/Employee_Attendance_Tracker_Presentation.pptx`
 
-`n` = number of employees. HashMap operations are average-case estimates.
+## Future enhancements
 
-## 5. Important prototype note
-
-The browser prototype is a front-end demonstration and stores its sample data locally in the browser. The Java console program is the separate DSA implementation. They are not connected to each other and do not use a shared database.
-
-## 6. Suggested project explanation
-
-"The Employee Attendance Tracker is designed to maintain employee details and daily attendance. An array stores employee records, while a HashMap maps employee IDs to their positions and attendance information. This makes searching and attendance updates efficient. The project also provides employee management and attendance reports."
+- Connect the browser interface to a Java backend using APIs.
+- Add MySQL or SQLite persistence.
+- Add authentication and role-based access.
+- Add monthly reports and CSV/PDF export.
+- Add leave and late-arrival tracking.

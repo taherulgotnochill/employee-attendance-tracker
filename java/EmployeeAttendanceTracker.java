@@ -14,7 +14,7 @@ public class EmployeeAttendanceTracker {
     private static final int CAPACITY = 100;
     private static final Employee[] employees = new Employee[CAPACITY];
     private static final HashMap<Integer, Integer> employeeIndex = new HashMap<>();
-    
+    // employee ID -> (date -> attendance status)
     private static final HashMap<Integer, HashMap<String, String>> attendance = new HashMap<>();
     private static int employeeCount = 0;
     private static final Scanner sc = new Scanner(System.in);
